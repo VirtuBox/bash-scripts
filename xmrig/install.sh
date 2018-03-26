@@ -26,9 +26,9 @@ cd /etc/ || exit
 sudo git clone https://github.com/xmrig/xmrig.git
 
 # set current user as owner
-sudo chown -R $USER:$USER xmrig
+sudo chown -R "$USER:$USER" xmrig
 
-# build xmrigCC
+# build xmrig
 cd xmrig || exit
 mkdir build
 cd build || exit
@@ -55,7 +55,7 @@ EOF
 sudo mv xmrig.service /lib/systemd/system/xmrig.service
 
 # enable HugePage
-sudo echo 'vm.nr_hugepages=128' >> /etc/sysctl.conf
+echo 'vm.nr_hugepages=128' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
 # enable xmrig service
