@@ -22,11 +22,11 @@ sudo apt-get install gcc-7 g++-7  -y
 
 # download xmrig
 
-cd /etc/ || exit
+cd /etc || exit
 sudo git clone https://github.com/xmrig/xmrig.git
 
 # set current user as owner
-sudo chown -R "$USER:$USER" xmrig
+sudo chown -R $USER:$USER xmrig
 
 # build xmrig
 cd xmrig || exit
