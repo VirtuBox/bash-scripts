@@ -33,22 +33,10 @@ make -j "$(nproc)"
 
 # create xmrigCC systemd service
 
-cat <<EOF >xmrigcc.service
-[Unit]
-Description=xmrigCC Daemon
+sudo wget https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/xmrigcc.service -O  /lib/systemd/system/xmrigcc.service
 
-[Service]
-ExecStart=/etc/xmrigCC/xmrigDaemon
-StandardOutput=null
-
-[Install]
-WantedBy=multi-user.target
-Alias=xmrigcc.service
-EOF
-
-# move xmrigcc.service to systemd
-
-sudo mv xmrigcc.service /lib/systemd/system/xmrigcc.service
+# enable xmrigCC service
+sudo systemctl enable xmrigcc.service
 
 # enable HugePage
 echo 'vm.nr_hugepages=128' | sudo tee -a /etc/sysctl.conf
@@ -58,5 +46,4 @@ sudo sysctl -p
 cp src/config.json .
 cp src/config_cc.json .
 
-# enable xmrigCC service
-sudo systemctl enable xmrigcc.service
+
