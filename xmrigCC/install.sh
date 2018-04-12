@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# xmrigCC install script for Ubuntu 16.04 LTS
+#
+# 1) download the script
+# 2) make the script executable with : chmod +x install.sh
+# 3) execute it :  ./install.sh
+# 4) edit default config.json file (pool address, wallet address)
+# 5) start xmrigCC : sudo systemctl start xmrigcc.service
+# 
+
+# install prerequisites
+
+sudo apt-get update
+sudo apt-get install git build-essential cmake libuv1-dev libmicrohttpd-dev libssl-dev -y
+
+# install gcc-7
+
+sudo add-apt-repository ppa:jonathonf/gcc-7.1 -y
+sudo apt-get update
+sudo apt-get install gcc-7 g++-7  -y
+
+# download xmrigCC
+
+cd /etc || exit
+sudo git clone https://github.com/Bendr0id/xmrigCC.git
+sudo chown -R $USER:$USER xmrigCC
+
+# build xmrigCC
+cd xmrigCC || exit
+cmake . -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7
+make -j "$(nproc)"
+
+# create xmrigCC systemd service
+
+cat <<EOF >xmrigcc.service
+[Unit]
+Description=xmrigCC Daemon
+
+[Service]
+ExecStart=/etc/xmrigCC/xmrigDaemon
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=xmrigcc.service
+EOF
+
+# move xmrigcc.service to systemd
+
+sudo mv xmrigcc.service /lib/systemd/system/xmrigcc.service
+
+# enable HugePage
+echo 'vm.nr_hugepages=128' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# copy default config.json file
+cp src/config.json .
+cp src/config_cc.json .
+
+# enable xmrigCC service
+sudo systemctl enable xmrigcc.service
