@@ -1,5 +1,7 @@
 #!/bin/bash
 
+release=v2.6.2
+
 # xmrig install script for Ubuntu 16.04 LTS
 #
 # 1) download the script
@@ -30,6 +32,7 @@ sudo chown -R $USER:$USER xmrig
 
 # build xmrig
 cd xmrig || exit
+git checkout $release
 mkdir build
 cd build || exit
 cmake .. -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7
