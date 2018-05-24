@@ -1,6 +1,6 @@
 #!/bin/bash
 
-release=https://github.com/Bendr0id/xmrigCC/releases/download/1.6.2/xmrigCC-1.6.2-with_tls-gcc7-linux-static-miner_only-x64.tar.gz
+release=https://github.com/Bendr0id/xmrigCC/releases/download/1.6.3/xmrigCC-1.6.3-with_tls-gcc7-linux-static-miner_only-x64.tar.gz
 
 
 cd /etc/xmrigCC || exit
