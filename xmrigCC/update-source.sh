@@ -1,6 +1,6 @@
 #!/bin/bash
 
-release=1.6.3
+release=1.6.4
 
 # stop xmrigcc
 sudo systemctl stop xmrigcc 
