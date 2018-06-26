@@ -5,14 +5,15 @@ release=1.6.5
 # stop xmrigcc
 sudo systemctl stop xmrigcc 
 
-if [ ! -d /etc/boost ]; then
+if [ -d /etc/boost ]; then
 cd /etc || exit
+rm -rf boost
 wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2
 tar xvfj boost_1_67_0.tar.bz2 && rm -rf boost_1_67_0.tar.bz2
 mv boost_1_67_0 boost
 cd boost || exit
 ./bootstrap.sh --with-libraries=system
-./b2
+./b2 --toolset=gcc-7
 fi
 
 cd /etc/xmrigCC || exit
