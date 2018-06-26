@@ -13,10 +13,10 @@ bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/
 
 ### Update
 ```bash
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/update-source.sh)
+bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/update-source.sh)
 ```
 
 ### Update Static
 ```bash
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/update-static.sh)
+bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/update-static.sh)
 ```
