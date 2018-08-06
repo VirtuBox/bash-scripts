@@ -3,20 +3,20 @@
 ### Install Boost lib
 
 ```bash
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/boost.sh)
+bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/boost.sh)
 ```
 ### Install
 ```bash
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/install.sh)
+bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/install.sh)
 ```
 
 
 ### Update
 ```bash
-bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/update-source.sh)
+bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-source.sh)
 ```
 
 ### Update Static
 ```bash
-bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/update-static.sh)
+bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-static.sh)
 ```
