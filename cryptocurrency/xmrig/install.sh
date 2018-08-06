@@ -14,7 +14,7 @@ release=v2.6.2
 # install prerequisites
 
 sudo apt-get update
-sudo apt-get install git build-essential cmake libuv1-dev libmicrohttpd-dev -y
+sudo apt-get install git build-essential cmake libuv1-dev libmicrohttpd-dev libssl-dev -y
 
 # install gcc-7
 
