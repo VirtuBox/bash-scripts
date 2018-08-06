@@ -1,14 +1,12 @@
 # MySQLDump Backup Script
 
-# -------------------------------------------------------------------------
-# Modified First By: Mitesh Shah
-# Then Modified By : VirtuBox
-# Copyright (c) 2007 Vivek Gite <vivek@nixcraft.com>
-# This script is licensed under GNU GPL version 2.0 or above
-# -------------------------------------------------------------------------
-# This script is part of nixCraft shell script collection (NSSC)
-# Visit http://bash.cyberciti.biz/ for more information.
-# -------------------------------------------------------------------------
+Modified First By: Mitesh Shah  
+Then Modified By : VirtuBox  
+Copyright (c) 2007 Vivek Gite <vivek@nixcraft.com>  
+This script is licensed under GNU GPL version 2.0 or above  
+This script is part of nixCraft shell script collection (NSSC)  
+Visit http://bash.cyberciti.biz/ for more information.  
+
 
 ## Download the script
 
