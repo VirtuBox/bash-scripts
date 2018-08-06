@@ -11,7 +11,7 @@ Visit http://bash.cyberciti.biz/ for more information.
 ## Download the script
 
 ```bash
-wget https://git.virtubox.net/virtubox/bash-script/raw/branch/master/backup/mysqldump.sh -O mysqldump.sh
+wget https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/backup/mysqldump/mysqldump.sh -O mysqldump.sh
 chmod +x mysqldump.sh
 ```
 
