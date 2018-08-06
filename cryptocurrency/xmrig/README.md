@@ -2,7 +2,7 @@
 
 Run the script with :
 ```
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrig/install.sh)
+bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrig/install.sh)
 ```
 
 
