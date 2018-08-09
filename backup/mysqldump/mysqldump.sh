@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # -------------------------------------------------------------------------
 # Modified First By: Mitesh Shah
 # Then Modified By : VirtuBox
@@ -12,9 +11,10 @@
 # -------------------------------------------------------------------------
 
 # Error handling
+
 function error()
 {
-	echo -e "[ `date` ] $(tput setaf 1)$@$(tput sgr0)"
+	echo -e "[ $(date) ] $(tput setaf 1)$@$(tput sgr0)"
 	exit $2
 }
 
@@ -54,78 +54,72 @@ ALLDB=0
 [ -f ~/.my.cnf ] || error "Error: ~/.my.cnf not found"
 
 ### Make Sure Bins Exists ###
-verify_bins(){
-	[ ! -x $GZIP ] && error "File $GZIP does not exists. Make sure correct path is set in $0."
-	[ ! -x $MYSQL ] && error "File $MYSQL does not exists. Make sure correct path is set in $0."
-	[ ! -x $MYSQLDUMP ] && error "File $MYSQLDUMP does not exists. Make sure correct path is set in $0."
-	[ ! -x $RM ] && error "File $RM does not exists. Make sure correct path is set in $0."
-	[ ! -x $MKDIR ] && error "File $MKDIR does not exists. Make sure correct path is set in $0."
-	[ ! -x $MYSQLADMIN ] && error "File $MYSQLADMIN does not exists. Make sure correct path is set in $0."
-	[ ! -x $GREP ] && error "File $GREP does not exists. Make sure correct path is set in $0."
-	[ ! -x $FIND ] && error "File $GREP does not exists. Make sure correct path is set in $0."
+verify_bins() {
+    [ ! -x $GZIP ] && error "File $GZIP does not exists. Make sure correct path is set in $0."
+    [ ! -x $MYSQL ] && error "File $MYSQL does not exists. Make sure correct path is set in $0."
+    [ ! -x $MYSQLDUMP ] && error "File $MYSQLDUMP does not exists. Make sure correct path is set in $0."
+    [ ! -x $RM ] && error "File $RM does not exists. Make sure correct path is set in $0."
+    [ ! -x $MKDIR ] && error "File $MKDIR does not exists. Make sure correct path is set in $0."
+    [ ! -x $MYSQLADMIN ] && error "File $MYSQLADMIN does not exists. Make sure correct path is set in $0."
+    [ ! -x $GREP ] && error "File $GREP does not exists. Make sure correct path is set in $0."
+    [ ! -x $FIND ] && error "File $GREP does not exists. Make sure correct path is set in $0."
 }
-
 
 ### Make Sure We Can Connect To The Server ###
-verify_mysql_connection(){
-	$MYSQLADMIN  ping | $GREP 'alive' > /dev/null
-	[ $? -eq 0 ] || error "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
+verify_mysql_connection() {
+    $MYSQLADMIN ping | $GREP 'alive' >/dev/null
+    [ $? -eq 0 ] || error "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
 }
-
 
 ### Make A Backup ###
-backup_mysql(){
-	local DBS="$($MYSQL -Bse 'show databases')"
-	local db="";
+backup_mysql() {
+    local DBS="$($MYSQL -Bse 'show databases')"
+    local db=""
 
-	[ ! -d $MYSQLDUMPLOG ] && $MKDIR -p $MYSQLDUMPLOG
-	[ ! -d $MYSQLDUMPPATH ] && $MKDIR -p $MYSQLDUMPPATH
-    
-	# find backup older than $DAYOLD and remove them
-	$FIND $MYSQLDUMPPATH -type f -mtime +$DAYSOLD -exec $RM -f {} \;  &>> $MYSQLDUMPLOG/mysqldump.log
+    [ ! -d $MYSQLDUMPLOG ] && $MKDIR -p $MYSQLDUMPLOG
+    [ ! -d $MYSQLDUMPPATH ] && $MKDIR -p $MYSQLDUMPPATH
 
-	[ $LOGS -eq 1 ] && echo "" &>> $MYSQLDUMPLOG/mysqldump.log
-	[ $LOGS -eq 1 ] && echo "*** Dumping MySQL Database At $(date) ***" &>> $MYSQLDUMPLOG/mysqldump.log
-	[ $LOGS -eq 1 ] && echo "Database >> " &>> $MYSQLDUMPLOG/mysqldump.log
+    # find backup older than $DAYOLD and remove them
+    $FIND $MYSQLDUMPPATH -type f -mtime +$DAYSOLD -exec $RM -f {} \; >>$MYSQLDUMPLOG/mysqldump.log 2>&1
 
-	for db in $DBS
-	do
-		local TIME=$(date +"$TIME_FORMAT")
-		local FILE="$MYSQLDUMPPATH/$db/$db.$TIME.gz"
-		[ $LOGS -eq 1 ] && echo -e \\t "$db" &>> $MYSQLDUMPLOG/mysqldump.log
+    [ $LOGS -eq 1 ] && echo ""  >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    [ $LOGS -eq 1 ] && echo "*** Dumping MySQL Database At $(date) ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    [ $LOGS -eq 1 ] && echo "Database >> " >>$MYSQLDUMPLOG/mysqldump.log 2>&1
 
-		if [  $db = "mysql" ] || [  $db = "performance_schema" ] || [  $db = "slow_query_log" ] || [  $db = "information_schema" ] || [  $db = "phpmyadmin" ]
-		then
-			echo "mysql settings tables" &>> $MYSQLDUMPLOG/mysqldump.log
-		else
-        	[ ! -d $MYSQLDUMPPATH/$db ] && $MKDIR -p $MYSQLDUMPPATH/$db
-			$MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 > $FILE || echo -e \\t \\t "MySQLDump Failed $db"
-		fi
-	done
+    for db in $DBS; do
+        local TIME=$(date +"$TIME_FORMAT")
+        local FILE="$MYSQLDUMPPATH/$db/$db.$TIME.gz"
+        [ $LOGS -eq 1 ] && echo -e \\t "$db" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
 
-    
-	[ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" &>> $MYSQLDUMPLOG/mysqldump.log
+        if [ $db = "mysql" ] || [ $db = "performance_schema" ] || [ $db = "slow_query_log" ] || [ $db = "information_schema" ] || [ $db = "phpmyadmin" ]; then
+            echo "mysql settings tables" >>$MYSQLDUMPLOG/mysqldump.log
+        else
+            [ ! -d $MYSQLDUMPPATH/$db ] && $MKDIR -p $MYSQLDUMPPATH/$db
+            $MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+        fi
+    done
+
+    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
 }
 
-## Backup all databases 
-backup_mysql_all_database(){
+## Backup all databases
+backup_mysql_all_database() {
 
-	[ $LOGS -eq 1 ] && echo "" &>> $MYSQLDUMPLOG/mysqldump.log
-	[ $LOGS -eq 1 ] && echo "*** Dumping MySQL all-database At $(date) ***" &>> $MYSQLDUMPLOG/mysqldump.log
-	    
+    [ $LOGS -eq 1 ] && echo "" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    [ $LOGS -eq 1 ] && echo "*** Dumping MySQL all-database At $(date) ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+
     local TIME=$(date +"$TIME_FORMAT")
     [ ! -d $MYSQLFULLDUMPPATH ] && $MKDIR -p $MYSQLFULLDUMPPATH
     local FILE="$MYSQLDUMPPATH/all-database.$TIME.gz"
-    $MYSQLDUMP --all-databases --single-transaction --skip-lock-tables | $GZIP -9 > $FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+    $MYSQLDUMP --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
 
-	[ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" &>> $MYSQLDUMPLOG/mysqldumpl.log
+    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
 }
-
 
 ### Main ####
 verify_bins
 verify_mysql_connection
 backup_mysql
-if [  $ALLDB = "1" ]; then
-backup_mysql_all_database
+if [ $ALLDB = "1" ]; then
+    backup_mysql_all_database
 fi
