@@ -110,10 +110,10 @@ backup_mysql_all_database() {
 
     local TIME=$(date +"$TIME_FORMAT")
     [ ! -d $MYSQLFULLDUMPPATH ] && $MKDIR -p $MYSQLFULLDUMPPATH
-    local FILE="$MYSQLDUMPPATH/all-database.$TIME.gz"
+    local FILE="$MYSQLFULLDUMPPATH/all-database.$TIME.gz"
     $MYSQLDUMP --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
 
-    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
+    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
 }
 
 ### Main ####
