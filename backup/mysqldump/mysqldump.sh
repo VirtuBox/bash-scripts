@@ -10,15 +10,6 @@
 # Visit http://bash.cyberciti.biz/ for more information.
 # -------------------------------------------------------------------------
 
-# Error handling
-
-function error()
-{
-	echo -e "[ $(date) ] $(tput setaf 1)$@$(tput sgr0)"
-	exit $2
-}
-
-
 ### Set Bins Path ###
 RM=/bin/rm
 GZIP=/bin/gzip
@@ -51,24 +42,57 @@ ALLDB=0
 ### ----[ No Editing below ]------###
 #####################################
 
-[ -f ~/.my.cnf ] || error "Error: ~/.my.cnf not found"
-
 ### Make Sure Bins Exists ###
 verify_bins() {
-    [ ! -x $GZIP ] && error "File $GZIP does not exists. Make sure correct path is set in $0."
-    [ ! -x $MYSQL ] && error "File $MYSQL does not exists. Make sure correct path is set in $0."
-    [ ! -x $MYSQLDUMP ] && error "File $MYSQLDUMP does not exists. Make sure correct path is set in $0."
-    [ ! -x $RM ] && error "File $RM does not exists. Make sure correct path is set in $0."
-    [ ! -x $MKDIR ] && error "File $MKDIR does not exists. Make sure correct path is set in $0."
-    [ ! -x $MYSQLADMIN ] && error "File $MYSQLADMIN does not exists. Make sure correct path is set in $0."
-    [ ! -x $GREP ] && error "File $GREP does not exists. Make sure correct path is set in $0."
-    [ ! -x $FIND ] && error "File $GREP does not exists. Make sure correct path is set in $0."
+    [ ! -x $GZIP ] && {
+        echo "File $GZIP does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $MYSQL ] && {
+        echo "File $MYSQL does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $MYSQLDUMP ] && {
+        echo "File $MYSQLDUMP does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $RM ] && {
+        echo "File $RM does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $MKDIR ] && {
+        echo "File $MKDIR does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $MYSQLADMIN ] && {
+        echo "File $MYSQLADMIN does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $GREP ] && {
+        echo "File $GREP does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
+    [ ! -x $FIND ] && {
+        echo "File $GREP does not exists. Make sure correct path is set in $0."
+        exit 0
+    }
 }
+
+### Check if Plesk is installed and use .my.cnf alternative if true
+if [ -d /etc/psa ]; then
+    MYSQLDUMP="MYSQL_PWD=$(cat /etc/psa/.psa.shadow) /usr/bin/mysqldump -uadmin"
+elif [ ! -f ~/.my.cnf ]; then
+    echo "Error: ~/.my.cnf not found"
+    exit 0
+fi
 
 ### Make Sure We Can Connect To The Server ###
 verify_mysql_connection() {
     $MYSQLADMIN ping | $GREP 'alive' >/dev/null
-    [ $? -eq 0 ] || error "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
+    [ $? -eq 0 ] || {
+        echo "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
+        exit 0
+    }
 }
 
 ### Make A Backup ###
@@ -82,7 +106,7 @@ backup_mysql() {
     # find backup older than $DAYOLD and remove them
     $FIND $MYSQLDUMPPATH -type f -mtime +$DAYSOLD -exec $RM -f {} \; >>$MYSQLDUMPLOG/mysqldump.log 2>&1
 
-    [ $LOGS -eq 1 ] && echo ""  >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    [ $LOGS -eq 1 ] && echo "" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
     [ $LOGS -eq 1 ] && echo "*** Dumping MySQL Database At $(date) ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
     [ $LOGS -eq 1 ] && echo "Database >> " >>$MYSQLDUMPLOG/mysqldump.log 2>&1
 
