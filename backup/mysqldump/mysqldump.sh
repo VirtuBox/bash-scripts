@@ -78,17 +78,19 @@ verify_bins() {
     }
 }
 
-### Check if Plesk is installed and use .my.cnf alternative if true
-if [ -d /etc/psa ]; then
-    MYSQLDUMP="MYSQL_PWD=$(cat /etc/psa/.psa.shadow) /usr/bin/mysqldump -uadmin"
-elif [ ! -f ~/.my.cnf ]; then
+### Check if .my.cnf exit or if Plesk is installed
+if [ ! -f ~/.my.cnf ] && [ ! -d /etc/psa ]; then
     echo "Error: ~/.my.cnf not found"
     exit 0
 fi
 
 ### Make Sure We Can Connect To The Server ###
 verify_mysql_connection() {
-    $MYSQLADMIN ping | $GREP 'alive' >/dev/null
+    if [ -d /etc/psa ]; then
+        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLADMIN -uadmin ping | $GREP 'alive' >/dev/null
+    else
+        $MYSQLADMIN ping | $GREP 'alive' >/dev/null
+    fi
     [ $? -eq 0 ] || {
         echo "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
         exit 0
@@ -97,7 +99,11 @@ verify_mysql_connection() {
 
 ### Make A Backup ###
 backup_mysql() {
-    local DBS="$($MYSQL -Bse 'show databases')"
+    if [ -d /etc/psa ]; then
+        { local DBS="$(MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQL -uadmin -Bse 'show databases')"; }
+    else
+        { local DBS="$($MYSQL -Bse 'show databases')"; }
+    fi
     local db=""
 
     [ ! -d $MYSQLDUMPLOG ] && $MKDIR -p $MYSQLDUMPLOG
@@ -119,7 +125,11 @@ backup_mysql() {
             echo "mysql settings tables" >>$MYSQLDUMPLOG/mysqldump.log
         else
             [ ! -d $MYSQLDUMPPATH/$db ] && $MKDIR -p $MYSQLDUMPPATH/$db
-            $MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+            if [ -d /etc/psa ]; then
+                MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+            else
+                $MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+            fi
         fi
     done
 
@@ -135,8 +145,11 @@ backup_mysql_all_database() {
     local TIME=$(date +"$TIME_FORMAT")
     [ ! -d $MYSQLFULLDUMPPATH ] && $MKDIR -p $MYSQLFULLDUMPPATH
     local FILE="$MYSQLFULLDUMPPATH/all-database.$TIME.gz"
-    $MYSQLDUMP --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
-
+    if [ -d /etc/psa ]; then
+        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+    else
+        $MYSQLDUMP --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+    fi
     [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
 }
 
