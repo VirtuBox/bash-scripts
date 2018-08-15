@@ -128,7 +128,7 @@ backup_mysql() {
             if [ -d /etc/psa ]; then
                 MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
             else
-                $MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+                $MYSQLDUMP --single-transaction $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
             fi
         fi
     done
