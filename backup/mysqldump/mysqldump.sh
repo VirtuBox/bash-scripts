@@ -126,9 +126,9 @@ backup_mysql() {
         else
             [ ! -d $MYSQLDUMPPATH/$db ] && $MKDIR -p $MYSQLDUMPPATH/$db
             if [ -d /etc/psa ]; then
-                MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+                MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
             else
-                $MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+                $MYSQLDUMP --single-transaction --skip-lock-tables $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
             fi
         fi
     done
@@ -146,9 +146,9 @@ backup_mysql_all_database() {
     [ ! -d $MYSQLFULLDUMPPATH ] && $MKDIR -p $MYSQLFULLDUMPPATH
     local FILE="$MYSQLFULLDUMPPATH/all-database.$TIME.gz"
     if [ -d /etc/psa ]; then
-        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --all-databases --single-transaction --events | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
     else
-        $MYSQLDUMP --all-databases --single-transaction --events --skip-lock-tables | $GZIP -9 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+        $MYSQLDUMP --all-databases --single-transaction --events | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
     fi
     [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
 }
