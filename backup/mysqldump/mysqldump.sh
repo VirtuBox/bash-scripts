@@ -19,6 +19,7 @@ MYSQL=/usr/bin/mysql
 MYSQLDUMP=/usr/bin/mysqldump
 MYSQLADMIN=/usr/bin/mysqladmin
 FIND=/usr/bin/find
+PIGZ=/usr/bin/pigz
 
 ### Enable Log = 1 ###
 LOGS=1
@@ -41,6 +42,18 @@ ALLDB=0
 #####################################
 ### ----[ No Editing below ]------###
 #####################################
+
+### Check if /usr/bin/pigz is executable
+### if yes, use pigz instead of gzip to compress with multithreading support
+
+if [ -x $PIGZ ]; then
+    COMPRESS=$PIGZ
+    NCPU=$(nproc)
+    GZIP_ARG="-9 -p$NCPU"
+else
+    COMPRESS=$GZIP
+    GZIP_ARG="-1"
+fi
 
 ### Make Sure Bins Exists ###
 verify_bins() {
@@ -126,9 +139,9 @@ backup_mysql() {
         else
             [ ! -d $MYSQLDUMPPATH/$db ] && $MKDIR -p $MYSQLDUMPPATH/$db
             if [ -d /etc/psa ]; then
-                MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+                MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction $db $EXTRA_PARAMS | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
             else
-                $MYSQLDUMP --single-transaction $db $EXTRA_PARAMS | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
+                $MYSQLDUMP --single-transaction $db $EXTRA_PARAMS | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
             fi
         fi
     done
@@ -146,9 +159,9 @@ backup_mysql_all_database() {
     [ ! -d $MYSQLFULLDUMPPATH ] && $MKDIR -p $MYSQLFULLDUMPPATH
     local FILE="$MYSQLFULLDUMPPATH/all-database.$TIME.gz"
     if [ -d /etc/psa ]; then
-        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --all-databases --single-transaction --events | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --all-databases --single-transaction --events | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
     else
-        $MYSQLDUMP --all-databases --single-transaction --events | $GZIP -1 >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
+        $MYSQLDUMP --all-databases --single-transaction --events | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
     fi
     [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
 }
