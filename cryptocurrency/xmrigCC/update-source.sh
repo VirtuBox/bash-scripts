@@ -1,10 +1,23 @@
 #!/bin/bash
 
-release=1.6.5
+release=1.7.0-beta1
 
 # stop xmrigcc
 sudo systemctl stop xmrigcc 
 
+
+
+if [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-7_1-xenial.list ]; then
+                apt-get install software-properties-common -y
+                add-apt-repository ppa:jonathonf/gcc-7.1 -y
+                apt-get update
+                apt-get install gcc-7 g++-7 -y
+                export CC="/usr/bin/gcc-7"
+                export CXX="/usr/bin/gc++-7"
+fi
+
+
+                
 if [ -d /etc/boost ]; then
 cd /etc || exit
 rm -rf boost
