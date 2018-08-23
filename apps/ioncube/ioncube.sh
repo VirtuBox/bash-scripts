@@ -20,7 +20,7 @@ wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.t
 tar -xvzf ioncube_loaders_lin_x86-64.tar.gz
 cd ioncube || exit 0
 
-cp ioncube_loader_lin_$PHP_VER.so $EXTENSION_DIR/
+cp ioncube_loader_lin_$PHP_VER.so $EXTENSION_DIR
 
 if [ ! -f /etc/php/$PHP_VER/fpm/conf.d/00-ioncube-loader.ini ]; then
     echo "zend_extension=ioncube_loader_lin_$PHP_VER.so" >/etc/php/$PHP_VER/fpm/conf.d/00-ioncube-loader.ini
