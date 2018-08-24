@@ -44,7 +44,7 @@ make -j "$(nproc)"
 
 # create xmrigCC systemd service
 
-sudo wget https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/xmrigCC/xmrigcc.service -O  /lib/systemd/system/xmrigcc.service
+sudo wget https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service -O  /lib/systemd/system/xmrigcc.service
 
 # enable xmrigCC service
 sudo systemctl enable xmrigcc.service
