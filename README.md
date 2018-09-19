@@ -5,6 +5,7 @@ A collection of bash scripts
 ## App
 
 * [phpmyadmin update](https://github.com/VirtuBox/bash-scripts/tree/master/apps/phpmyadmin) :  update phpmyadmin to the latest release with EasyEngine
+* [ioncube installer](https://github.com/VirtuBox/bash-scripts/tree/master/apps/ioncube) : install ioncube loader on ubuntu
 
 ## Backup
 
