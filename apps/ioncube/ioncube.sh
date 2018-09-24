@@ -16,9 +16,10 @@ if [ -d ioncube ]; then
     rm -rf ioncube
 fi
 
-wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+wget -q https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
 tar -xvzf ioncube_loaders_lin_x86-64.tar.gz
-cd ioncube || exit 0
+rm ioncube_loaders_lin_x86-64.tar.gz
+cd ioncube || exit 1
 
 cp ioncube_loader_lin_$PHP_VER.so $EXTENSION_DIR -f
 
