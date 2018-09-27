@@ -29,19 +29,70 @@ TIME_FORMAT='%d-%b-%Y-%H%M%S'
 
 ### Setup Dump And Log Directory ###
 MYSQLDUMPPATH=/var/www/mysqldump
-MYSQLFULLDUMPPATH=/var/www/mysqldump/full
+MYSQLFULLDUMPPATH=$MYSQLDUMPPATH/full
 MYSQLDUMPLOG=/var/log/mysqldump.log
-EXTRA_PARAMS=$1
 
 ### Remove Backup older than X days ###
 DAYSOLD=3
 
 ### Backup all-databases in a single file ###
 ALLDB=0
+SINGLE_DB=1
+
+
+_help() {
+    echo "Backup MySQL databases using mysqldump"
+    echo "Usage: ./mysqldump.sh [mode][options] ..."
+    echo "  Options:"
+    echo "       -e, --extra <extra-params> ..... add options to mysqldump command"
+    echo "       -p, --path <path> ....... set MySQL dump path"
+    echo "       --log <path> ..... set mysqldump.sh log path"
+    echo "  Modes:"
+    echo "       --full ..... enable all-databases dump in a single file"
+    echo "       --only-full ..... enable all-databases dump and disable individual dump"
+    echo "  Other options:"
+    echo "       -h, --help, help ... displays this help information"
+    echo ""
+    return 0
+}
 
 #####################################
 ### ----[ No Editing below ]------###
 #####################################
+
+while [[ $# -gt 0 ]]; do
+    arg="$1"
+    case $arg in
+    -e | --extra)
+        EXTRA_PARAMS=$2
+        shift
+        ;;
+    -p | --path)
+        MYSQLDUMPPATH=$2
+        shift
+        ;;
+    --log)
+        MYSQLDUMPLOG=$2
+        shift
+        ;;
+    -f | --full)
+        ALLDB=1
+        shift
+        ;;
+    --only-full)
+        ALLDB=1
+        SINGLE_DB=0
+        shift
+        ;;
+    -h | --help | help)
+        _help
+        exit 1
+        ;;
+    *) # positional args
+        ;;
+    esac
+    shift
+done
 
 ### Check if /usr/bin/pigz is executable
 ### if yes, use pigz instead of gzip to compress with multithreading support
@@ -169,7 +220,9 @@ backup_mysql_all_database() {
 ### Main ####
 verify_bins
 verify_mysql_connection
-backup_mysql
-if [ $ALLDB = "1" ]; then
+if [ "$SINGLE_DB" = "1" ]; then
+    backup_mysql
+fi
+if [ "$ALLDB" = "1" ]; then
     backup_mysql_all_database
 fi
