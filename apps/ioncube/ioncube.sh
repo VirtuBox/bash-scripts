@@ -23,10 +23,12 @@ cd ioncube || exit 1
 
 cp ioncube_loader_lin_$PHP_VER.so $EXTENSION_DIR -f
 
-if [ ! -f /etc/php/$PHP_VER/fpm/conf.d/00-ioncube-loader.ini ]; then
+FPM_CHECK=$(grep "zend_extension=ioncube_loader_lin_$PHP_VER.so" -r /etc/php/7.2/fpm/conf.d)
+CLI_CHECK=$(grep "zend_extension=ioncube_loader_lin_$PHP_VER.so" -r /etc/php/7.2/cli/conf.d)
+if [ -z "FPM_CHECK" ]; then
     echo "zend_extension=ioncube_loader_lin_$PHP_VER.so" >/etc/php/$PHP_VER/fpm/conf.d/00-ioncube-loader.ini
 fi
-if [ ! -f /etc/php/$PHP_VER/cli/conf.d/00-ioncube-loader.ini ]; then
+if [ -z "CLI_CHECK" ]; then
     echo "zend_extension=ioncube_loader_lin_$PHP_VER.so" >/etc/php/$PHP_VER/cli/conf.d/00-ioncube-loader.ini
 fi
 
