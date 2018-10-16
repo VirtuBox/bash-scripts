@@ -1,22 +1,18 @@
-## XMRIGCC compilation on Ubuntu 16.04 LTS with Gcc7/G++7
+## Script to install or update XMRIGCC  Ubuntu 16.04/18.04 LTS with Gcc7/G++7
 
-### Install Boost lib
 
+### Compile xmrigcc from source and setup xmrigcc.service
 ```bash
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/boost.sh)
-```
-### Install
-```bash
-bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/install.sh)
+bash <(wget -qO - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/install.sh)
 ```
 
 
-### Update
+### Update xmrigcc from source
 ```bash
-bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-source.sh)
+bash <(wget --no-cache -qO - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-source.sh)
 ```
 
-### Update Static
+### Update static xmrigcc build
 ```bash
-bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-static.sh)
+bash <(wget --no-cache -qO - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-static.sh)
 ```
