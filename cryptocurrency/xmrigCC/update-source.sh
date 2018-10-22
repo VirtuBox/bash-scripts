@@ -36,6 +36,7 @@ git fetch
 git checkout $release
 
 # compile xmrigcc
+make clean
 cmake . -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7 -DBOOST_ROOT=/etc/boost
 make -j "$(nproc)"
 
