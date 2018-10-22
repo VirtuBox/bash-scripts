@@ -18,7 +18,7 @@ fi
 
 
                 
-if [ -d /etc/boost ]; then
+if [ ! -d /etc/boost ]; then
 cd /etc || exit
 rm -rf boost
 wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2
