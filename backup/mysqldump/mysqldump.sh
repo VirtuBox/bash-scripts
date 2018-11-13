@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # -------------------------------------------------------------------------
 # Modified First By: Mitesh Shah
 # Then Modified By : VirtuBox
@@ -39,7 +38,7 @@ DAYSOLD=3
 ALLDB=0
 SINGLE_DB=1
 
-
+### Add help menu
 _help() {
     echo "Backup MySQL databases using mysqldump"
     echo "Usage: ./mysqldump.sh [mode][options] ..."
@@ -59,6 +58,8 @@ _help() {
 #####################################
 ### ----[ No Editing below ]------###
 #####################################
+
+# script arguments parsing
 
 while [[ $# -gt 0 ]]; do
     arg="$1"
