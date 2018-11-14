@@ -14,11 +14,33 @@
 sudo apt-get update
 sudo apt-get install git build-essential cmake libuv1-dev libmicrohttpd-dev libssl-dev -y
 
-# install gcc-7
+##################################
+# Install gcc7 or gcc8 from PPA
+##################################
+# gcc7 for nginx stable on Ubuntu 16.04 LTS
+# gcc8 for nginx mainline on Ubuntu 16.04 LTS & 18.04 LTS
 
-sudo add-apt-repository ppa:jonathonf/gcc-7.1 -y
-sudo apt-get update
-sudo apt-get install gcc-7 g++-7  -y
+# Checking lsb_release package
+if [ ! -x /usr/bin/lsb_release ]; then
+    sudo apt-get -y install lsb-release | sudo tee -a /tmp/nginx-ee.log 2>&1
+fi
+
+# install gcc-7
+distro_version=$(lsb_release -sc)
+
+
+    if [ "$distro_version" == "bionic" ] && [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-bionic.list ]; then
+        apt-get install software-properties-common -y
+        add-apt-repository -y ppa:jonathonf/gcc
+        elif [ "$distro_version" == "xenial" ] && [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-xenial.list ]; then
+        apt-get install software-properties-common -y
+        add-apt-repository -y ppa:jonathonf/gcc
+    fi
+    apt-get update
+    apt-get full-upgrade
+    apt-get install gcc-7 g++-7 -y
+    export CC="/usr/bin/gcc-7"
+    export CXX="/usr/bin/gc++-7"
 
 # install libboost if needed
 
@@ -44,7 +66,7 @@ make -j "$(nproc)"
 
 # create xmrigCC systemd service
 
-sudo wget https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service -O  /lib/systemd/system/xmrigcc.service
+sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service 
 
 # enable xmrigCC service
 sudo systemctl enable xmrigcc.service
