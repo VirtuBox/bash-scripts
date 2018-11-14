@@ -11,6 +11,11 @@ tar -xzf xmrigcc.tar.gz
 rm xmrigcc.tar.gz
 rm config.json
 mv c config.json
+
+sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service
+sudo systemctl daemon-reload
+
+
 service xmrigcc start
 
 
