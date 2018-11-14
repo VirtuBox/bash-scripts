@@ -2,7 +2,7 @@
 Description=xmrigCC Daemon
 
 [Service]
-ExecStart=/etc/xmrigCC/xmrigDaemon
+ExecStart=/usr/bin/nice -n 19 /etc/xmrigCC/xmrigDaemon
 StandardOutput=null
 
 [Install]

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-release=https://github.com/Bendr0id/xmrigCC/releases/download/1.8.2/xmrigCC-1.8.2-with_tls-gcc7-linux-static-miner_only-x64.tar.gz
+release=https://github.com/Bendr0id/xmrigCC/releases/download/1.8.2/xmrigCC-1.8.2-with_tls-gcc7-linux-static-miner_only-arm64.tar.gz
 
 
-cd /etc/xmrigCC || exit
+cd /etc/xmrigCC || exit 1
 service xmrigcc stop
-wget -qO xmrigcc.tar.gz $release 
+wget -O xmrigcc.tar.gz $release
 mv config.json c
-tar -xzvf xmrigcc.tar.gz
+tar -xzf xmrigcc.tar.gz
 rm xmrigcc.tar.gz
 rm config.json
 mv c config.json

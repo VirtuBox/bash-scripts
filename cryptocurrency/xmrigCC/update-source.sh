@@ -3,7 +3,7 @@
 release=1.8.2
 
 # stop xmrigcc
-sudo systemctl stop xmrigcc 
+sudo systemctl stop xmrigcc
 
 
 ##################################
@@ -37,7 +37,7 @@ distro_version=$(lsb_release -sc)
 
 
 
-                
+
 if [ ! -d /etc/boost ]; then
 cd /etc || exit 1
 rm -rf boost
