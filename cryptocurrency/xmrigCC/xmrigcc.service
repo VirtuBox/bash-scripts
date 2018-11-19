@@ -1,8 +1,10 @@
 [Unit]
 Description=xmrigCC Daemon
+After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
 ExecStart=/usr/bin/nice -n 19 /etc/xmrigCC/xmrigDaemon
+ExecStop=/bin/kill -s QUIT $MAINPID
 StandardOutput=null
 
 [Install]

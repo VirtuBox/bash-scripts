@@ -1,6 +1,6 @@
 #!/bin/bash
 
-release=1.8.2
+release=1.8.4
 
 # stop xmrigcc
 sudo systemctl stop xmrigcc
@@ -40,9 +40,8 @@ distro_version=$(lsb_release -sc)
 
 if [ ! -d /etc/boost ]; then
 cd /etc || exit 1
-rm -rf boost
 wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2
-tar xvfj boost_1_67_0.tar.bz2 && rm -f boost_1_67_0.tar.bz2
+/bin/tar xfj boost_1_67_0.tar.bz2 && rm -f boost_1_67_0.tar.bz2
 mv boost_1_67_0 boost
 cd boost || exit 1
 ./bootstrap.sh --with-libraries=system
@@ -64,4 +63,4 @@ sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.c
 sudo systemctl daemon-reload
 
 # restart xmrigcc
-service xmrigcc start
+sudo service xmrigcc start
