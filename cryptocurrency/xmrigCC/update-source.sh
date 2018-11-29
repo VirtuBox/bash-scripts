@@ -24,13 +24,15 @@ distro_version=$(lsb_release -sc)
     if [ "$distro_version" == "bionic" ] && [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-bionic.list ]; then
         apt-get install software-properties-common -y
         add-apt-repository -y ppa:jonathonf/gcc
+        apt-get update
         elif [ "$distro_version" == "xenial" ] && [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-xenial.list ]; then
         apt-get install software-properties-common -y
         add-apt-repository -y ppa:jonathonf/gcc
+        apt-get update
     fi
-    apt-get update
-    apt-get full-upgrade
+    if [ ! -x /usr/bin/gcc-7 ]; then
     apt-get install gcc-7 g++-7 -y
+    fi
     export CC="/usr/bin/gcc-7"
     export CXX="/usr/bin/gc++-7"
 
