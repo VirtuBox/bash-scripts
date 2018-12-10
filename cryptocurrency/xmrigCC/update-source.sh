@@ -1,6 +1,10 @@
 #!/bin/bash
 
-release=1.8.5
+release=1.8.6
+
+if [ -f /etc/systemd/system/xmrigdash.service ]; then
+sudo service xmrigdash stop
+fi
 
 # stop xmrigcc
 sudo systemctl stop xmrigcc
@@ -66,3 +70,7 @@ sudo systemctl daemon-reload
 
 # restart xmrigcc
 sudo service xmrigcc start
+
+if [ -f /etc/systemd/system/xmrigdash.service ]; then
+sudo service xmrigdash start
+fi
