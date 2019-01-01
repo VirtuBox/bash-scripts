@@ -1,6 +1,6 @@
 #!/bin/bash
 
-release=1.8.6
+release=1.8.7
 
 if [ -f /etc/systemd/system/xmrigdash.service ]; then
 sudo service xmrigdash stop
