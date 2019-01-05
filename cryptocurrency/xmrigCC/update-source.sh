@@ -1,14 +1,20 @@
 #!/bin/bash
 
-release=1.8.7
+if [ -d /etc/xmrigCC ]; then
+    git -C /etc/xmrigCC fetch
+    release="$(git -C /etc/xmrigCC tag | sort -nr | head -1)"
+else
+    exit 1
+fi
 
 if [ -f /etc/systemd/system/xmrigdash.service ]; then
-sudo service xmrigdash stop
+    sudo service xmrigdash stop
 fi
 
 # stop xmrigcc
-sudo systemctl stop xmrigcc
-
+if [ -f /etc/systemd/system/xmrigcc.service ]; then
+    sudo service xmrigdash stop
+fi
 
 ##################################
 # Install gcc7 or gcc8 from PPA
@@ -22,48 +28,37 @@ if [ ! -x /usr/bin/lsb_release ]; then
 fi
 
 # install gcc-7
-distro_version=$(lsb_release -sc)
 
-
-    if [ "$distro_version" == "bionic" ] && [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-bionic.list ]; then
-        apt-get install software-properties-common -y
-        add-apt-repository -y ppa:jonathonf/gcc
-        apt-get update
-        elif [ "$distro_version" == "xenial" ] && [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-xenial.list ]; then
-        apt-get install software-properties-common -y
-        add-apt-repository -y ppa:jonathonf/gcc
-        apt-get update
-    fi
-    if [ ! -x /usr/bin/gcc-7 ]; then
+if [ -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-"$(lsb_release -sc)".list ]; then
+    apt-get install software-properties-common -y
+    add-apt-repository -y ppa:jonathonf/gcc
+    apt-get update
+fi
+if [ ! -x /usr/bin/gcc-7 ]; then
     apt-get install gcc-7 g++-7 -y
-    fi
-    export CC="/usr/bin/gcc-7"
-    export CXX="/usr/bin/gc++-7"
-
-
-
-
+fi
+export CC="/usr/bin/gcc-7"
+export CXX="/usr/bin/gc++-7"
 
 if [ ! -d /etc/boost ]; then
-cd /etc || exit 1
-wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2
-/bin/tar xfj boost_1_67_0.tar.bz2 && rm -f boost_1_67_0.tar.bz2
-mv boost_1_67_0 boost
-cd boost || exit 1
-./bootstrap.sh --with-libraries=system
-./b2 --toolset=gcc-7
+    cd /etc || exit 1
+    curl -sL https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.bz2 | /bin/tar xjf - -C /etc
+    rm -f boost_1_67_0.tar.bz2
+    mv boost_1_67_0 boost
+    cd /etc/boost || exit 1
+    ./bootstrap.sh --with-libraries=system
+    ./b2 --toolset=gcc-7
 fi
 
 cd /etc/xmrigCC || exit 1
 
 # get the last release
-git fetch
 git checkout $release
 
 # compile xmrigcc
 make clean
 cmake . -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7 -DBOOST_ROOT=/etc/boost
-make -j "$(nproc)"
+make -j"$(nproc)"
 
 sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service
 sudo systemctl daemon-reload
@@ -72,5 +67,5 @@ sudo systemctl daemon-reload
 sudo service xmrigcc start
 
 if [ -f /etc/systemd/system/xmrigdash.service ]; then
-sudo service xmrigdash start
+    sudo service xmrigdash start
 fi
