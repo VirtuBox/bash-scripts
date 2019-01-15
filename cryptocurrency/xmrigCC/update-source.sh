@@ -2,7 +2,7 @@
 
 if [ -d /etc/xmrigCC ]; then
     git -C /etc/xmrigCC fetch
-    release="$(git -C /etc/xmrigCC tag | sort -nr | head -1)"
+    release="1.8.10"
 else
     exit 1
 fi
