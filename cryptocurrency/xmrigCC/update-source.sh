@@ -13,7 +13,7 @@ fi
 
 # stop xmrigcc
 if [ -f /etc/systemd/system/xmrigcc.service ]; then
-    sudo service xmrigdash stop
+    sudo service xmrigcc stop
 fi
 
 ##################################
