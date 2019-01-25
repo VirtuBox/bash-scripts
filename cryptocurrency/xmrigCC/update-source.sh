@@ -2,19 +2,19 @@
 
 if [ -d /etc/xmrigCC ]; then
     git -C /etc/xmrigCC fetch
-    release="1.8.10"
+    release="1.8.11"
 else
     exit 1
 fi
 
-if [ -f /etc/systemd/system/xmrigdash.service ]; then
+[ -f /etc/systemd/system/xmrigdash.service ] && {
     sudo service xmrigdash stop
-fi
+}
 
 # stop xmrigcc
-if [ -f /etc/systemd/system/xmrigcc.service ]; then
-    sudo service xmrigcc stop
-fi
+[ -f /etc/systemd/system/xmrigcc.service ] && {
+    sudo service xmrigcc stop*
+}
 
 ##################################
 # Install gcc7 or gcc8 from PPA
@@ -29,7 +29,7 @@ fi
 
 # install gcc-7
 
-if [ -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-"$(lsb_release -sc)".list ]; then
+if [ ! -f /etc/apt/sources.list.d/jonathonf-ubuntu-gcc-"$(lsb_release -sc)".list ]; then
     apt-get install software-properties-common -y
     add-apt-repository -y ppa:jonathonf/gcc
     apt-get update
@@ -59,9 +59,6 @@ git checkout $release
 make clean
 cmake . -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7 -DBOOST_ROOT=/etc/boost
 make -j"$(nproc)"
-
-sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service
-sudo systemctl daemon-reload
 
 # restart xmrigcc
 sudo service xmrigcc start
