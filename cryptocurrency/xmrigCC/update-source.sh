@@ -2,7 +2,7 @@
 
 if [ -d /etc/xmrigCC ]; then
     git -C /etc/xmrigCC fetch
-    release="1.8.11"
+    release="1.8.12"
 else
     exit 1
 fi
