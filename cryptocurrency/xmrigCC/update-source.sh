@@ -11,13 +11,13 @@ fi
 
 [ -f /etc/systemd/system/xmrigdash.service ] && {
     sudo service xmrigdash stop
-    echo "xmrigdash stopped"
+    echo "xmrigdash stopped [OK]"
 }
 
 # stop xmrigcc
 [ -f /etc/systemd/system/xmrigcc.service ] && {
     sudo service xmrigcc stop
-    echo "xmrigcc stopped"
+    echo "xmrigcc stopped [OK]"
 }
 
 ##################################
@@ -66,9 +66,9 @@ make -j"$(nproc)"
 
 # restart xmrigcc
 sudo service xmrigcc start
-echo "xmrigcc started"
+echo "xmrigcc started [OK]"
 
 if [ -f /etc/systemd/system/xmrigdash.service ]; then
     sudo service xmrigdash start
-    echo "xmrigdash started"
+    echo "xmrigdash started [OK]"
 fi
