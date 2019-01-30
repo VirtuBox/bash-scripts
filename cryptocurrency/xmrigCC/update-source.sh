@@ -7,13 +7,15 @@ else
     exit 1
 fi
 
+
+
 [ -f /etc/systemd/system/xmrigdash.service ] && {
     sudo service xmrigdash stop
 }
 
 # stop xmrigcc
 [ -f /etc/systemd/system/xmrigcc.service ] && {
-    sudo service xmrigcc stop*
+    sudo service xmrigcc stop
 }
 
 ##################################
