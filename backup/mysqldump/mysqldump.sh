@@ -61,35 +61,31 @@ _help() {
 
 # script arguments parsing
 
-while [[ $# -gt 0 ]]; do
-    arg="$1"
-    case $arg in
-    -e | --extra)
-        EXTRA_PARAMS=$2
-        shift
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -e | --extra)
+            EXTRA_PARAMS=$2
+            shift
         ;;
-    -p | --path)
-        MYSQLDUMPPATH=$2
-        shift
+        -p | --path)
+            MYSQLDUMPPATH=$2
+            shift
         ;;
-    --log)
-        MYSQLDUMPLOG=$2
-        shift
+        --log)
+            MYSQLDUMPLOG=$2
+            shift
         ;;
-    -f | --full)
-        ALLDB=1
-        shift
+        -f | --full)
+            ALLDB=1
         ;;
-    --only-full)
-        ALLDB=1
-        SINGLE_DB=0
-        shift
+        --only-full)
+            ALLDB=1
+            SINGLE_DB=0
         ;;
-    -h | --help | help)
-        _help
-        exit 1
+        -h | --help | help)
+            _help
         ;;
-    *) # positional args
+        *) # positional args
         ;;
     esac
     shift
