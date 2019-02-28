@@ -6,14 +6,8 @@
 bash <(wget -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/install.sh)
 ```
 
-## Update xmrigcc from source
+## Update xmrigcc (compiled from source or static build )
 
 ```bash
-bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-source.sh)
-```
-
-## Update static xmrigcc build
-
-```bash
-bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-static.sh)
+bash <(wget --no-cache -O - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/update-xmrigcc.sh)
 ```
