@@ -4,8 +4,8 @@
 # Variables
 ##################################
 
-release="1.8.13"
-static_build="https://github.com/Bendr0id/xmrigCC/releases/download/1.8.13/xmrigCC-1.8.13-with_tls-gcc7-linux-static-miner_only-x64.tar.gz"
+release="1.9.1"
+static_build="https://github.com/Bendr0id/xmrigCC/releases/download/1.9.1/xmrigCC-1.9.1-with_tls-gcc7-linux-static-miner_only-x64.tar.gz"
 
 ##################################
 # Stopping service
