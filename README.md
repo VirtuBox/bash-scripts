@@ -19,3 +19,7 @@ A collection of bash scripts
 
 * [xmrigCC compilation](https://github.com/VirtuBox/bash-scripts/tree/master/cryptocurrency/xmrigCC) : compile xmrig from source on Ubuntu 16.04/18.04 LTS
 * [xmrig compilation](https://github.com/VirtuBox/bash-scripts/tree/master/cryptocurrency/xmrig) : compile xmrig from source on Ubuntu 16.04/18.04 LTS
+
+## WP-CLI
+
+* [https migration](https://github.com/VirtuBox/bash-scripts/tree/master/wp-cli/https-migrate) : bash script to migrate from http to https using WP-CLI
