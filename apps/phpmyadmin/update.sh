@@ -1,5 +1,5 @@
 #!/bin/bash
-PHPMYADMIN_VERSION="4.8.3"
+PHPMYADMIN_VERSION="4.8.5"
 
 if [ "$(id -u)" != "0" ]; then
 	echo "Error: You must be root to run this script, please use the root user to install the software."
