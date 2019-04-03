@@ -18,7 +18,7 @@ tar -xzf ioncube.tar.gz
 rm -f ioncube.tar.gz
 
 cd ioncube || exit 1
-cp ioncube_loader_lin_${PHP_VER}.so "$EXTENSION_DIR" -f
+cp ioncube_loader_lin_$PHP_VER.so $EXTENSION_DIR -f
 
 FPM_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/fpm/conf.d)
 CLI_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/cli/conf.d)
