@@ -140,7 +140,7 @@ verify_bins() {
 }
 
 ### Check if .my.cnf exit or if Plesk is installed
-if [ ! -f ~/.my.cnf ] && [ ! -d /etc/psa ]; then
+if [ ! -f ~/.my.cnf ] && [ ! -f /etc/mysql/conf.d/my.cnf ] && [ ! -d /etc/psa ]; then
     echo "Error: ~/.my.cnf not found"
     exit 0
 fi
