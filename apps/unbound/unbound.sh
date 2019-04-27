@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 apt-get update && apt-get install unbound -y
 
@@ -14,6 +14,3 @@ touch /var/log/unbound.log
 chown unbound: /var/log/unbound.log
 
 service unbound restart
-
-
-

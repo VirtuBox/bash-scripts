@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 release=v2.6.2
 
@@ -9,7 +9,7 @@ release=v2.6.2
 # 3) execute it :  ./install.sh
 # 4) edit default config.json file (pool address, wallet address)
 # 5) start xmrig : sudo systemctl start xmrig.service
-# 
+#
 
 # install prerequisites
 

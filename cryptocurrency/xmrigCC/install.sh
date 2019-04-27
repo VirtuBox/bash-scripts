@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # xmrigCC install script for Ubuntu 16.04 LTS
 #
@@ -7,7 +7,7 @@
 # 3) execute it :  ./install.sh
 # 4) edit default config.json file (pool address, wallet address)
 # 5) start xmrigCC : sudo systemctl start xmrigcc.service
-# 
+#
 
 # install prerequisites
 
@@ -66,7 +66,7 @@ make -j "$(nproc)"
 
 # create xmrigCC systemd service
 
-sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service 
+sudo wget -O /lib/systemd/system/xmrigcc.service https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/cryptocurrency/xmrigCC/xmrigcc.service
 
 # enable xmrigCC service
 sudo systemctl enable xmrigcc.service
@@ -78,5 +78,3 @@ sudo sysctl -p
 # copy default config.json file
 cp src/config.json .
 cp src/config_cc.json .
-
-

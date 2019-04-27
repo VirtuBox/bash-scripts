@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 PHPMYADMIN_VERSION="4.8.5"
 
 if [ "$(id -u)" != "0" ]; then
@@ -15,6 +15,6 @@ wget https://files.phpmyadmin.net/phpMyAdmin/$PHPMYADMIN_VERSION/phpMyAdmin-$PHP
 unzip phpmyadmin.zip && rm phpmyadmin.zip
 mv pma/config.inc.php .
 cp -rf phpMyAdmin-$PHPMYADMIN_VERSION-all-languages/* pma/
-mv config.inc.php pma/ 
+mv config.inc.php pma/
 
 sudo chown -R www-data:www-data pma

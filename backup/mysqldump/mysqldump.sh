@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------------------------
 # Modified First By: Mitesh Shah
 # Then Modified By : VirtuBox

@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 release=v2.6.0-beta2
 
 # stop xmrig
-sudo systemctl stop xmrig 
+sudo systemctl stop xmrig
 
 cd /etc/xmrig || exit
 
