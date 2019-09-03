@@ -9,17 +9,6 @@
 # Visit http://bash.cyberciti.biz/ for more information.
 # -------------------------------------------------------------------------
 
-### Set Bins Path ###
-RM=/bin/rm
-GZIP=/bin/gzip
-GREP=/bin/grep
-MKDIR=/bin/mkdir
-MYSQL=/usr/bin/mysql
-MYSQLDUMP=/usr/bin/mysqldump
-MYSQLADMIN=/usr/bin/mysqladmin
-FIND=/usr/bin/find
-PIGZ=/usr/bin/pigz
-
 ### Enable Log = 1 ###
 LOGS=1
 
@@ -28,7 +17,7 @@ TIME_FORMAT='%d-%b-%Y-%H%M%S'
 
 ### Setup Dump And Log Directory ###
 MYSQLDUMPPATH=/var/www/mysqldump
-MYSQLFULLDUMPPATH=$MYSQLDUMPPATH/full
+MYSQLFULLDUMPPATH="$MYSQLDUMPPATH/full"
 MYSQLDUMPLOG=/var/log/mysqldump.log
 
 ### Remove Backup older than X days ###
@@ -37,6 +26,13 @@ DAYSOLD=3
 ### Backup all-databases in a single file ###
 ALLDB=0
 SINGLE_DB=1
+
+if [ -d /etc/psa ]; then
+    readonly MYSQL_PWD=$(cat /etc/psa/.psa.shadow)
+    MYSQL_USER="-uadmin"
+else
+    MYSQL_USER=""
+fi
 
 ### Add help menu
 _help() {
@@ -63,29 +59,29 @@ _help() {
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
-        -e | --extra)
-            EXTRA_PARAMS=$2
-            shift
+    -e | --extra)
+        EXTRA_PARAMS=$2
+        shift
         ;;
-        -p | --path)
-            MYSQLDUMPPATH=$2
-            shift
+    -p | --path)
+        MYSQLDUMPPATH=$2
+        shift
         ;;
-        --log)
-            MYSQLDUMPLOG=$2
-            shift
+    --log)
+        MYSQLDUMPLOG=$2
+        shift
         ;;
-        -f | --full)
-            ALLDB=1
+    -f | --full)
+        ALLDB=1
         ;;
-        --only-full)
-            ALLDB=1
-            SINGLE_DB=0
+    --only-full)
+        ALLDB=1
+        SINGLE_DB=0
         ;;
-        -h | --help | help)
-            _help
+    -h | --help | help)
+        _help
         ;;
-        *) # positional args
+    *) # positional args
         ;;
     esac
     shift
@@ -94,49 +90,44 @@ done
 ### Check if /usr/bin/pigz is executable
 ### if yes, use pigz instead of gzip to compress with multithreading support
 
-if [ -x $PIGZ ]; then
-    COMPRESS=$PIGZ
+if command_exists pigz; then
+    COMPRESS=$(command -v pigz)
     NCPU=$(nproc)
     GZIP_ARG="-9 -p$NCPU"
 else
-    COMPRESS=$GZIP
+    COMPRESS=$(command -v gzip)
     GZIP_ARG="-1"
 fi
 
+command_exists() {
+    command -v "$@" > /dev/null 2>&1
+}
+
 ### Make Sure Bins Exists ###
 verify_bins() {
-    [ ! -x $GZIP ] && {
-        echo "File $GZIP does not exists. Make sure correct path is set in $0."
+
+    if ! command_exists gzip; then
+        echo "gzip isn't available."
         exit 0
-    }
-    [ ! -x $MYSQL ] && {
-        echo "File $MYSQL does not exists. Make sure correct path is set in $0."
+    fi
+    if ! command_exists mysql; then
+        echo "mysql isn't available."
         exit 0
-    }
-    [ ! -x $MYSQLDUMP ] && {
-        echo "File $MYSQLDUMP does not exists. Make sure correct path is set in $0."
+    else
+    MYSQL=$(command -v mysql)
+    fi
+    if ! command_exists mysqldump; then
+        echo "mysqldump isn't available"
         exit 0
-    }
-    [ ! -x $RM ] && {
-        echo "File $RM does not exists. Make sure correct path is set in $0."
+    else
+    MYSQLDUMP=$(command -v mysqldump)
+    fi
+    if ! command_exists mysqladmin; then
+        echo "mysqladmin isn't available"
         exit 0
-    }
-    [ ! -x $MKDIR ] && {
-        echo "File $MKDIR does not exists. Make sure correct path is set in $0."
-        exit 0
-    }
-    [ ! -x $MYSQLADMIN ] && {
-        echo "File $MYSQLADMIN does not exists. Make sure correct path is set in $0."
-        exit 0
-    }
-    [ ! -x $GREP ] && {
-        echo "File $GREP does not exists. Make sure correct path is set in $0."
-        exit 0
-    }
-    [ ! -x $FIND ] && {
-        echo "File $GREP does not exists. Make sure correct path is set in $0."
-        exit 0
-    }
+    else
+    MYSQLADMIN=$(command -v mysqladmin)
+    fi
 }
 
 ### Check if .my.cnf exit or if Plesk is installed
@@ -147,71 +138,61 @@ fi
 
 ### Make Sure We Can Connect To The Server ###
 verify_mysql_connection() {
-    if [ -d /etc/psa ]; then
-        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLADMIN -uadmin ping | $GREP 'alive' >/dev/null
-    else
-        $MYSQLADMIN ping | $GREP 'alive' >/dev/null
-    fi
-    [ $? -eq 0 ] || {
+    if ! {
+        $MYSQLADMIN $MYSQL_USER ping | $GREP -q 'alive' > /dev/null
+    }; then
         echo "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
         exit 0
-    }
+    fi
 }
 
 ### Make A Backup ###
 backup_mysql() {
-    if [ -d /etc/psa ]; then
-        { local DBS="$(MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQL -uadmin -Bse 'show databases')"; }
-    else
-        { local DBS="$($MYSQL -Bse 'show databases')"; }
-    fi
+    local DBS
+    DBS="$($MYSQL $MYSQL_USER -Bse 'show databases')"
     local db=""
 
-    [ ! -d $MYSQLDUMPLOG ] && $MKDIR -p $MYSQLDUMPLOG
-    [ ! -d $MYSQLDUMPPATH ] && $MKDIR -p $MYSQLDUMPPATH
+    [ ! -d "$MYSQLDUMPLOG" ] && mkdir -p "$MYSQLDUMPLOG"
+    [ ! -d "$MYSQLDUMPPATH" ] && mkdir -p "$MYSQLDUMPPATH"
 
     # find backup older than $DAYOLD and remove them
-    $FIND $MYSQLDUMPPATH -type f -mtime +$DAYSOLD -exec $RM -f {} \; >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    find "$MYSQLDUMPPATH" -type f -mtime +$DAYSOLD -exec rm -f {} \; >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1 &
 
-    [ $LOGS -eq 1 ] && echo "" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
-    [ $LOGS -eq 1 ] && echo "*** Dumping MySQL Database At $(date) ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
-    [ $LOGS -eq 1 ] && echo "Database >> " >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    [ $LOGS -eq 1 ] && echo "" >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
+    [ $LOGS -eq 1 ] && echo "*** Dumping MySQL Database At $(date) ***" >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
+    [ $LOGS -eq 1 ] && echo "Database >> " >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
 
     for db in $DBS; do
-        local TIME=$(date +"$TIME_FORMAT")
-        local FILE="$MYSQLDUMPPATH/$db/$db.$TIME.gz"
-        [ $LOGS -eq 1 ] && echo -e \\t "$db" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+        local TIME
+        TIME=$(date +"$TIME_FORMAT")
+        local FILE
+        FILE="$MYSQLDUMPPATH/$db/$db.$TIME.gz"
+        [ $LOGS -eq 1 ] && echo -e \\t "$db" >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
 
-        if [ $db = "mysql" ] || [ $db = "performance_schema" ] || [ $db = "slow_query_log" ] || [ $db = "information_schema" ] || [ $db = "phpmyadmin" ]; then
-            echo "mysql settings tables" >>$MYSQLDUMPLOG/mysqldump.log
+        if [ "$db" = "mysql" ] || [ "$db" = "performance_schema" ] || [ "$db" = "slow_query_log" ] || [ "$db" = "information_schema" ] || [ "$db" = "phpmyadmin" ]; then
+            echo "mysql settings tables" >> "$MYSQLDUMPLOG/mysqldump.log"
         else
-            [ ! -d $MYSQLDUMPPATH/$db ] && $MKDIR -p $MYSQLDUMPPATH/$db
-            if [ -d /etc/psa ]; then
-                MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --single-transaction $db $EXTRA_PARAMS | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
-            else
-                $MYSQLDUMP --single-transaction $db $EXTRA_PARAMS | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed $db"
-            fi
+            [ ! -d "$MYSQLDUMPPATH/$db" ] && mkdir -p "$MYSQLDUMPPATH/$db"
+            $MYSQLDUMP $MYSQL_USER --single-transaction "$db" "$EXTRA_PARAMS" | $COMPRESS $GZIP_ARG > "$FILE" || echo -e \\t \\t "MySQLDump Failed $db" &
         fi
     done
-
-    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    wait
+    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLDUMPPATH] ***" >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
 }
 
 ## Backup all databases
 backup_mysql_all_database() {
 
-    [ $LOGS -eq 1 ] && echo "" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
-    [ $LOGS -eq 1 ] && echo "*** Dumping MySQL all-database At $(date) ***" >>$MYSQLDUMPLOG/mysqldump.log 2>&1
+    [ $LOGS -eq 1 ] && echo "" >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
+    [ $LOGS -eq 1 ] && echo "*** Dumping MySQL all-database At $(date) ***" >> "$MYSQLDUMPLOG/mysqldump.log" 2>&1
 
-    local TIME=$(date +"$TIME_FORMAT")
-    [ ! -d $MYSQLFULLDUMPPATH ] && $MKDIR -p $MYSQLFULLDUMPPATH
+    local TIME
+    TIME=$(date +"$TIME_FORMAT")
+    [ ! -d $MYSQLFULLDUMPPATH ] && mkdir -p $MYSQLFULLDUMPPATH
     local FILE="$MYSQLFULLDUMPPATH/all-database.$TIME.gz"
-    if [ -d /etc/psa ]; then
-        MYSQL_PWD=$(cat /etc/psa/.psa.shadow) $MYSQLDUMP -uadmin --all-databases --single-transaction --events | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
-    else
-        $MYSQLDUMP --all-databases --single-transaction --events | $COMPRESS $GZIP_ARG >$FILE || echo -e \\t \\t "MySQLDump Failed all-databases"
-    fi
-    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >>$MYSQLDUMPLOG/mysqldumpl.log 2>&1
+    $MYSQLDUMP $MYSQL_USER --all-databases --single-transaction --events | $COMPRESS $GZIP_ARG > "$FILE" || echo -e \\t \\t "MySQLDump Failed all-databases" &
+    [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >> "$MYSQLDUMPLOG/mysqldumpl.log" 2>&1
+    wait
 }
 
 ### Main ####
