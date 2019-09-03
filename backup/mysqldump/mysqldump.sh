@@ -139,7 +139,7 @@ fi
 ### Make Sure We Can Connect To The Server ###
 verify_mysql_connection() {
     if ! {
-        $MYSQLADMIN $MYSQL_USER ping | $GREP -q 'alive' > /dev/null
+        $MYSQLADMIN $MYSQL_USER ping | grep -q 'alive' > /dev/null
     }; then
         echo "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
         exit 0
