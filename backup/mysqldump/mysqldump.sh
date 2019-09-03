@@ -174,7 +174,7 @@ backup_mysql() {
             echo "mysql settings tables" >> "$MYSQLDUMPLOG/mysqldump.log"
         else
             [ ! -d "$MYSQLDUMPPATH/$db" ] && mkdir -p "$MYSQLDUMPPATH/$db"
-            $MYSQLDUMP $MSQL_USER --single-transaction "$db" "$EXTRA_PARAMS" | $COMPRESS $GZIP_ARG > "$FILE" || echo -e \\t \\t "MySQLDump Failed $db"
+            $MYSQLDUMP $MSQL_USER --single-transaction "$db" $EXTRA_PARAMS | $COMPRESS $GZIP_ARG > "$FILE" || echo -e \\t \\t "MySQLDump Failed $db"
         fi
     done
     wait
