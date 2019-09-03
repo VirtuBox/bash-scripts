@@ -19,6 +19,7 @@ TIME_FORMAT='%d-%b-%Y-%H%M%S'
 MYSQLDUMPPATH=/var/www/mysqldump
 MYSQLFULLDUMPPATH="$MYSQLDUMPPATH/full"
 MYSQLDUMPLOG=/var/log/mysqldump.log
+EXTRA_PARAMS=""
 
 ### Remove Backup older than X days ###
 DAYSOLD=3
