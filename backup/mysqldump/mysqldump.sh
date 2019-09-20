@@ -52,6 +52,11 @@ _help() {
     return 0
 }
 
+# check if a command exist
+command_exists() {
+    command -v "$@" > /dev/null 2>&1
+}
+
 #####################################
 ### ----[ No Editing below ]------###
 #####################################
@@ -99,10 +104,6 @@ else
     COMPRESS=$(command -v gzip)
     GZIP_ARG="-1"
 fi
-
-command_exists() {
-    command -v "$@" > /dev/null 2>&1
-}
 
 ### Make Sure Bins Exists ###
 verify_bins() {
