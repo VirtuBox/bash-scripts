@@ -7,13 +7,13 @@
 ### Usage
 
 ```bash
-bash <(wget -qO - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/apps/ioncube/ioncube.sh) <PHP VERSION>
+bash <(wget -qO - vtb.cx/ioncube) <PHP VERSION>
 ```
 
 Example for php7.0 : 
 
 ```bash
-bash <(wget -qO - https://raw.githubusercontent.com/VirtuBox/bash-scripts/master/apps/ioncube/ioncube.sh) 7.0
+bash <(wget -qO - vtb.cx/ioncube) 7.0
 ```
 
 If php version is not set as argument, the script will automatically install ioncube for the newest php version installed
