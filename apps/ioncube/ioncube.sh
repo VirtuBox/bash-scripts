@@ -11,6 +11,7 @@ if ! command_exists curl; then
 fi
 
 cd /tmp || exit 1
+rm -rf /tmp/ioncube
 
 if [ -n "$1" ]; then
     if [ -x "/usr/bin/php$1" ]; then
@@ -28,11 +29,8 @@ fi
 EXTENSION_DIR=$(/usr/bin/php${PHP_VER} -i | grep extension_dir | awk -F "=> " '{print $2}')
 
 curl -sL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz | tar -xzf - -C /tmp
-if [ ! -d /tmp/ioncube ]; then
-    echo "ioncube download failed"
-    exit 1
-fi
-cp "/tmp/ioncube/ioncube_loader_lin_$PHP_VER.so" "$EXTENSION_DIR" -f
+cd /tmp/ioncube || exit 1
+cp "ioncube_loader_lin_$PHP_VER.so" "$EXTENSION_DIR" -f
 
 FPM_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/fpm/conf.d)
 CLI_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/cli/conf.d)
