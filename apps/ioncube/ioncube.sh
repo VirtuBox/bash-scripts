@@ -32,9 +32,9 @@ curl -sL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-
 cd /tmp/ioncube || exit 1
 cp "ioncube_loader_lin_$PHP_VER.so" "$EXTENSION_DIR" -f
 
-FPM_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/fpm/conf.d)
-CLI_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/cli/conf.d)
-MODS_AVAILABLE=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/mods-available)
+FPM_CHECK=$(grep "ioncube" -R /etc/php/${PHP_VER}/fpm/conf.d)
+CLI_CHECK=$(grep "ioncube" -R /etc/php/${PHP_VER}/cli/conf.d)
+MODS_AVAILABLE=$(grep "ioncube" -r /etc/php/${PHP_VER}/mods-available)
 if [ -z "$MODS_AVAILABLE" ]; then
     echo -e "; configuration for php ioncube loader\n; priority=00\nzend_extension=ioncube_loader_lin_${PHP_VER}.so" >/etc/php/${PHP_VER}/mods-available/ioncube-loader.ini
 fi
