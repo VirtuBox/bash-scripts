@@ -46,5 +46,5 @@ if [ -z "$CLI_CHECK" ]; then
 fi
 
 service php${PHP_VER}-fpm restart
-
+cd || exit 1
 rm -rf /tmp/ioncube
