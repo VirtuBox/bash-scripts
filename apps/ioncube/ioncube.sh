@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 
-[ -z "$(command -v pigz)" ] && {
-    apt-get update -qq && apt-get install -yqq pigz
+# check if a command exist
+command_exists() {
+    command -v "$@" >/dev/null 2>&1
 }
 
-cd "$HOME" || exit 1
+if ! command_exists curl; then
+    "curl isn't installed and is required"
+    exit 1
+fi
 
-if [ "$1" ]; then
+cd /tmp || exit 1
+rm -rf /tmp/ioncube
+
+if [ -n "$1" ]; then
     if [ -x "/usr/bin/php$1" ]; then
         PHP_VER="$1"
     else
@@ -14,30 +21,36 @@ if [ "$1" ]; then
         exit 1
     fi
 else
-    PHP_VER=$(/usr/bin/php -i | grep "Loaded Configuration File" | awk -F "=> " '{print $2}' | awk -F "/" '{print $4}')
+    if [ -x "/usr/bin/php" ]; then
+        PHP_VER=$(readlink -f /etc/alternatives/php | awk -F "/usr/bin/php" '{print $2}')
+    fi
 fi
 
-EXTENSION_DIR=$(/usr/bin/php${PHP_VER} -i | grep extension_dir | awk -F "=> " '{print $2}')
-
-rm -f ioncube*.tar.gz
-rm -rf ioncube
-
-wget -O ioncube.tar.gz https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
-tar -I pigz -xf ioncube.tar.gz
-rm -f ioncube.tar.gz
-
-cd ioncube || exit 1
-cp ioncube_loader_lin_$PHP_VER.so $EXTENSION_DIR -f
-
-FPM_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/fpm/conf.d)
-CLI_CHECK=$(grep "zend_extension=ioncube_loader_lin_${PHP_VER}.so" -r /etc/php/${PHP_VER}/cli/conf.d)
-if [ -z "$FPM_CHECK" ]; then
-    echo "zend_extension=ioncube_loader_lin_${PHP_VER}.so" > /etc/php/${PHP_VER}/fpm/conf.d/00-ioncube-loader.ini
+if [ "$PHP_VER" = "7.4" ]; then
+    echo "PHP 7.4 is not supported by ioncube loader yet"
+    exit 1
 fi
-if [ -z "$CLI_CHECK" ]; then
-    echo "zend_extension=ioncube_loader_lin_${PHP_VER}.so" > /etc/php/${PHP_VER}/cli/conf.d/00-ioncube-loader.ini
+
+EXTENSION_DIR=$(/usr/bin/php${PHP_VER} -i | grep extension_dir | awk -F "=> " '{print $2}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+curl -sSL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz | tar -xzf - -C /tmp
+cd /tmp/ioncube || exit 1
+cp ioncube_loader_lin_${PHP_VER}.so "${EXTENSION_DIR}/" -f
+
+if [ ! -f "${EXTENSION_DIR}/ioncube_loader_lin_${PHP_VER}.so" ]; then
+    exit 1
+fi
+
+if ! grep -q "ioncube" -r /etc/php/${PHP_VER}/mods-available; then
+    echo -e "; configuration for php ioncube loader\n; priority=00\nzend_extension=ioncube_loader_lin_${PHP_VER}.so" >/etc/php/${PHP_VER}/mods-available/ioncube-loader.ini
+fi
+if ! grep -q "ioncube" -R /etc/php/${PHP_VER}/fpm/conf.d; then
+    phpenmod -v "$PHP_VER" ioncube-loader
+fi
+if ! grep -q "ioncube" -R /etc/php/${PHP_VER}/cli/conf.d; then
+    phpenmod -v "$PHP_VER" ioncube-loader
 fi
 
 service php${PHP_VER}-fpm restart
-
-rm -rf ioncube
+cd || exit 1
+rm -rf /tmp/ioncube
