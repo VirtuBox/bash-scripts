@@ -32,18 +32,20 @@ curl -sSL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86
 cd /tmp/ioncube || exit 1
 cp ioncube_loader_lin_${PHP_VER}.so "${EXTENSION_DIR}/" -f
 
-if [ ! -f "${EXTENSION_DIR}ioncube_loader_lin_${PHP_VER}.so" ]
+if [ ! -f "${EXTENSION_DIR}/ioncube_loader_lin_${PHP_VER}.so" ]; then
+    exit 1
+fi
 
 FPM_CHECK=$(grep "ioncube" -R /etc/php/${PHP_VER}/fpm/conf.d)
 CLI_CHECK=$(grep "ioncube" -R /etc/php/${PHP_VER}/cli/conf.d)
 MODS_AVAILABLE=$(grep "ioncube" -r /etc/php/${PHP_VER}/mods-available)
-if ! grep -q "ioncube" -r /etc/php/${PHP_VER}/mods-available ; then
-    echo -e "; configuration for php ioncube loader\n; priority=00\nzend_extension=ioncube_loader_lin_${PHP_VER}.so" > /etc/php/${PHP_VER}/mods-available/ioncube-loader.ini
+if ! grep -q "ioncube" -r /etc/php/${PHP_VER}/mods-available; then
+    echo -e "; configuration for php ioncube loader\n; priority=00\nzend_extension=ioncube_loader_lin_${PHP_VER}.so" >/etc/php/${PHP_VER}/mods-available/ioncube-loader.ini
 fi
 if ! grep -q "ioncube" -R /etc/php/${PHP_VER}/fpm/conf.d; then
     phpenmod -v "$PHP_VER" ioncube-loader
 fi
-if  ! grep -q "ioncube" -R /etc/php/${PHP_VER}/cli/conf.d; then
+if ! grep -q "ioncube" -R /etc/php/${PHP_VER}/cli/conf.d; then
     phpenmod -v "$PHP_VER" ioncube-loader
 fi
 
