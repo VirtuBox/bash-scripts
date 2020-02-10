@@ -26,6 +26,11 @@ else
     fi
 fi
 
+if [ "$PHP_VER" = "7.4" ]; then
+    echo "PHP 7.4 is not supported by ioncube loader yet"
+    exit 1
+fi
+
 EXTENSION_DIR=$(/usr/bin/php${PHP_VER} -i | grep extension_dir | awk -F "=> " '{print $2}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
 curl -sSL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz | tar -xzf - -C /tmp
