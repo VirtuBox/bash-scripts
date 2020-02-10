@@ -41,9 +41,6 @@ if [ ! -f "${EXTENSION_DIR}/ioncube_loader_lin_${PHP_VER}.so" ]; then
     exit 1
 fi
 
-FPM_CHECK=$(grep "ioncube" -R /etc/php/${PHP_VER}/fpm/conf.d)
-CLI_CHECK=$(grep "ioncube" -R /etc/php/${PHP_VER}/cli/conf.d)
-MODS_AVAILABLE=$(grep "ioncube" -r /etc/php/${PHP_VER}/mods-available)
 if ! grep -q "ioncube" -r /etc/php/${PHP_VER}/mods-available; then
     echo -e "; configuration for php ioncube loader\n; priority=00\nzend_extension=ioncube_loader_lin_${PHP_VER}.so" >/etc/php/${PHP_VER}/mods-available/ioncube-loader.ini
 fi
