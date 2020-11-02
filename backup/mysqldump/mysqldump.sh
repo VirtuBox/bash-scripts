@@ -143,7 +143,7 @@ fi
 ### Make Sure We Can Connect To The Server ###
 verify_mysql_connection() {
     if ! {
-        $MYSQLADMIN "$MYSQL_USER" ping | grep -q 'alive' >/dev/null
+        $MYSQLADMIN $MYSQL_USER ping | grep -q 'alive' >/dev/null
     }; then
         echo "Error: Cannot connect to MySQL Server. Make sure username and password are set correctly in $0"
         exit 0
@@ -153,7 +153,7 @@ verify_mysql_connection() {
 ### Make A Backup ###
 backup_mysql() {
     local DBS
-    DBS=$($MYSQL "$MYSQL_USER" -Bse 'show databases')
+    DBS=$($MYSQL $MYSQL_USER -Bse 'show databases')
     local db=""
 
     [ ! -d "$MYSQLDUMPLOG" ] && mkdir -p "$MYSQLDUMPLOG"
@@ -177,7 +177,7 @@ backup_mysql() {
             echo "mysql settings tables" >>"$MYSQLDUMPLOG/mysqldump.log"
         else
             [ ! -d "$MYSQLDUMPPATH/$db" ] && mkdir -p "$MYSQLDUMPPATH/$db"
-            $MYSQLDUMP "$MYSQL_USER" --single-transaction --max_allowed_packet=1024M --hex-blob "$db" "$EXTRA_PARAMS" | $COMPRESS $GZIP_ARG >"$FILE" || echo -e \\t \\t "MySQLDump Failed $db"
+            $MYSQLDUMP $MYSQL_USER --single-transaction --max_allowed_packet=1024M --hex-blob "$db" $EXTRA_PARAMS | $COMPRESS $GZIP_ARG >"$FILE" || echo -e \\t \\t "MySQLDump Failed $db"
         fi
     done
     wait
@@ -194,7 +194,7 @@ backup_mysql_all_database() {
     TIME=$(date +"$TIME_FORMAT")
     [ ! -d $MYSQLFULLDUMPPATH ] && mkdir -p $MYSQLFULLDUMPPATH
     local FILE="$MYSQLFULLDUMPPATH/all-database.$TIME.gz"
-    $MYSQLDUMP "$MYSQL_USER" --all-databases --hex-blob --max_allowed_packet=1024M --single-transaction --events | $COMPRESS $GZIP_ARG >"$FILE" || echo -e \\t \\t "MySQLDump Failed all-databases" &
+    $MYSQLDUMP $MYSQL_USER --all-databases --hex-blob --max_allowed_packet=1024M --single-transaction --events | $COMPRESS $GZIP_ARG >"$FILE" || echo -e \\t \\t "MySQLDump Failed all-databases" &
     [ $LOGS -eq 1 ] && echo "*** Backup Finished At $(date) [ files wrote to $MYSQLFULLDUMPPATH] ***" >>"$MYSQLDUMPLOG/mysqldumpl.log" 2>&1
     wait
 }
