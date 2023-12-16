@@ -26,7 +26,7 @@ else
     fi
 fi
 
-EXTENSION_DIR=$(/usr/bin/php${PHP_VER} -i | grep extension_dir | awk -F "=> " '{print $2}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+EXTENSION_DIR=$(/usr/bin/php${PHP_VER} -i | grep extension_dir | grep /usr/lib | awk -F "=> " '{print $2}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
 curl -sSL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz | tar -xzf - -C /tmp
 cd /tmp/ioncube || exit 1
